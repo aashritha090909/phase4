@@ -9,6 +9,10 @@
     <form method="POST" action="{% url 'place_order' %}">
         {% csrf_token %}
 
+        <label for="order_number">Order Number (INT):</label><br>
+        <input type="number" id="order_number" name="order_number" required><br><br>
+
+
         <label for="priority">Priority (INT):</label><br>
         <input type="number" id="priority" name="priority" required><br><br>
 
@@ -45,7 +49,7 @@
 
 <hr>
 {% if context.message %}
-    <p style="color: green;"{{ context.message }}</p>
+    <p style="color: green;">{{ context.message }}</p>
 {% elif context.error %}
     <p style="color: red;">{{ context.error }}</p>
 {% endif %}

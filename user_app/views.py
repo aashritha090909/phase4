@@ -1,3 +1,5 @@
+from ipaddress import ip_address
+
 from django.shortcuts import render
 from django.db import connection
 from django.http import HttpResponse
@@ -112,8 +114,10 @@ def place_order_view(request):
 
         try:
             ip_priority = int(request.POST.get('priority'))
+            ip_cost = int(request.POST.get('cost'))
+            ip_orderNumber = int(request.POST.get('order_number'))
         except(ValueError, TypeError):
-            context['error'] = 'Priority must be a whole number'
+            context['error'] = 'Priority, Cost, and Order Number must be a whole number'
             return render(request, 'user_app/place_order.html', context)
 
         try:
@@ -122,28 +126,20 @@ def place_order_view(request):
             context['error'] = 'Dosage must be a whole number'
             return render(request, 'user_app/place_order.html', context)
 
-        try:
-            ip_cost = int(request.POST.get('cost'))
-        except (ValueError, TypeError):
-            context['error'] = 'Cost must be a whole number'
-            return render(request, 'user_app/place_order.html', context)
-
-        try:
-            ip_orderNumber = int(request.POST.get('order_number'))
-        except (ValueError, TypeError):
-            context['error'] = 'Order Number must be a whole number'
-            return render(request, 'user_app/place_order.html', context)
 
 
         required_fields = [ip_orderNumber, ip_priority, ip_patientId, ip_doctorId, ip_cost]
-        if not all(required_fields) or ip_cost < 0 or ip_dosage < 0:
-            context['error'] = 'These fields are required and cost and dosage cannot be negative'
+        if not all(required_fields):
+            context['error'] = 'These fields are required'
             return render(request, 'user_app/place_order.html', context)
 
-        if ip_cost < 0 or ip_priority < 1 or ip_priority > 5:
-            context['error'] = 'Cost cant be negative and priority should be between1 and 5.'
+        if ip_cost < 0:
+            context['error'] = 'Cost cant be negative.'
             return render(request, 'user_app/place_order.html', context)
 
+        if not (1 <= ip_priority <= 5) :
+            context['error'] = 'Priority must be between 1 and 5'
+            return render(request, 'user_app/place_order.html', context)
 
         is_lab_order = ip_labType not in (None, '', 'None')
         is_prescription = ip_drug not in (None, '', 'None') and ip_dosage is not None
@@ -157,7 +153,7 @@ def place_order_view(request):
             return render(request, 'user_app/place_order.html', context)
 
         if is_prescription and ip_dosage <= 0:
-            context['error'] = 'Dosage cant be negative'
+            context['error'] = 'Dosage must be positive'
             return render(request, 'user_app/place_order.html', context)
 
         if is_lab_order:
@@ -176,3 +172,40 @@ def place_order_view(request):
             context['error'] = f"Error placing order. Details: {e}"
 
     return render(request, 'user_app/place_order.html', context)
+
+
+
+def add_staff_to_dept_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_deptId = request.POST.get('dept_id')
+        ip_ssn = request.POST.get('ssn')
+        ip_firstname = request.POST.get('firstname')
+        ip_lastname = request.POST.get('lastname')
+        ip_birthdate = request.POST.get('birthdate')
+        ip_startdate = request.POST.get('startdate')
+        ip_address = request.POST.get('address')
+        ip_staffId = request.POST.get('staff_id')
+        ip_salary = request.POST.get('salary')
+
+        required = [ip_deptId, ip_ssn, ip_firstname, ip_lastname, ip_birthdate, ip_startdate, ip_address, ip_staffId, ip_salary]
+        if not all(required):
+            context['error'] = 'These fields are required'
+            return render(request, 'user_app/add_staff_to_dept.html', context)
+
+        try:
+            ip_deptId = int(ip_deptId)
+            ip_staffId = int(ip_staffId)
+            ip_salary = int(ip_salary)
+        except (ValueError, TypeError):
+            context['error'] = 'Department ID, Staff ID, Salary must be a whole number'
+            return render(request, 'user_app/add_staff_to_dept.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('add_staff_to_dept', [ip_deptId, ip_ssn, ip_firstname, ip_lastname, ip_birthdate, ip_startdate, ip_address, ip_staffId, ip_salary])
+                context['message'] = f'Staff added to Department {ip_deptId}.'
+        except Exception as e:
+            context['error'] = f"Error adding staff. Details: {e}"
+
+    return render(request, 'user_app/add_staff_to_dept.html', context)
