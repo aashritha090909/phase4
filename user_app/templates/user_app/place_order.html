@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Place Order </title>
+</head>
+<body>
+    <h2>Place Order For Patient </h2>
+    <form method="POST" action="{% url 'place_order' %}">
+        {% csrf_token %}
+
+        <label for="priority">Priority (INT):</label><br>
+        <input type="number" id="priority" name="priority" required><br><br>
+
+        <label for="patient_id">Patient SSN (ID):</label><br>
+        <input type="text" id="patient_id" name="patient_id" required><br><br>
+
+        <label for="doctor_id">Doctor SSN (ID):</label><br>
+        <input type="number" id="doctor_id" name="doctor_id" required><br><br>
+
+        <label>Order Type:</label><br>
+        <input type="radio" id="order_lab" name="order_type" value="lab" checked>
+        <label for="order_lab"> Lab Order</label><br>
+        <input type="radio" id="order_prescription" name="order_type" value="prescription">
+        <label for="order_prescription"> Prescription Order</label><br><br>
+
+        <div id="lab_fields">
+            <label for="lab_type"> Lab Type:</label><br>
+            <input type="text" id="lab_type" name="lab_type"><br><br>
+        </div>
+
+        <div id="prescription_fields" style="display:none;">
+            <label for="drug">Drug:</label><br>
+            <input type="text" id="drug" name="drug"><br><br>
+
+            <label for="dosage">Dosage:</label><br>
+            <input type="number" id="dosage" name="dosage" min="0"><br><br>
+        </div>
+
+        <label for="cost">Cost (Integer):</label><br>
+        <input type="number" id="cost" name="cost" required min="0"><br><br>
+
+        <button type = "submit">Place Order</button>
+    </form>
+
+<hr>
+{% if context.message %}
+    <p style="color: green;"{{ context.message }}</p>
+{% elif context.error %}
+    <p style="color: red;">{{ context.error }}</p>
+{% endif %}
+
+<script>
+    const orderLabRadio = document.getElementById('order_lab');
+    const orderPrescriptionRadio = document.getElementById('order_prescription');
+    const labFields = document.getElementById('lab_fields');
+    const prescriptionFields = document.getElementById('prescription_fields');
+
+    function toggleFields() {
+        if (orderLabRadio.checked) {
+            labFields.style.display = 'block';
+            prescriptionFields.style.display = 'none';
+
+            document.getElementById('lab_type').required = true;
+            document.getElementById('drug').required = false;
+            document.getElementById('dosage').required = false;
+        } else if (orderPrescriptionRadio.checked) {
+            labFields.style.display = 'none';
+            prescriptionFields.style.display = 'block';
+
+            document.getElementById('lab_type').required = false;
+            document.getElementById('drug').required = true;
+            document.getElementById('dosage').required = true;
+        }
+    }
+
+    orderLabRadio.addEventListener('change',toggleFields);
+    orderPrescriptionRadio.addEventListener('change',toggleFields);
+
+    toggleFields();
+</script>
+</body>
+</html>

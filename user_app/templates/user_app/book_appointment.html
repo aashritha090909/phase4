@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Book Appointment </title>
+</head>
+<body>
+    <h2>Book Appointment For Patient </h2>
+    <form method="POST" action="{% url 'book_appointment' %}">
+        {% csrf_token %}
+
+
+        <label for="patient_id">Patient SSN (ID):</label><br>
+        <input type="text" id="patient_id" name="patient_id" required><br><br>
+
+        <label for ="appt_date">Appointment Date (YYYY-MM-DD):</label><br>
+        <input type="date" id="appt_date" name="appt_date" required><br><br>
+
+        <label for = "appt_time">Appointment Time (HH:MM:SS 24-hour format):</label><br>
+        <input
+                type="text"
+                id="appt_time"
+                name="appt_time"
+                required
+                pattern="([01]\d|2[0-3]):([0-5]\d):([0-5]\d)"
+                title="Time must be in 24 hours format"
+        ><br><br>
+
+        <label for="cost">Cost (INTEGER):</label><br>
+        <input type="number" id="cost" name="cost" required min="0"><br><br>
+
+        <button type = "submit">Book Appointment</button>
+    </form>
+
+<hr>
+{% if context.message %}
+    <p style="color: green;"{{context.message}}</p>
+{% elif context.error %}
+    <p style="color: red;">{{context.error}}</p>
+{% endif %}
+
+</body>
+</html>

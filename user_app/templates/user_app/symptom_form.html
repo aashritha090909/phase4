@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Record Patient Symptom</title>
+</head>
+<body>
+    <h2>Record Symptom for Appointment</h2>
+    <form method="POST" action="{% url 'record_symptom' %}">
+        {% csrf_token %}
+        <h3> Appointment & Patient Details</h3>
+
+        <label for="patient_id">Patient SSN (ID):</label><br>
+        <input type="text" id="patient_id" name="patient_id" required><br><br>
+
+        <label for ="appt_date">Appointment Date (YYYY-MM-DD):</label><br>
+        <input type="date" id="appt_date" name="appt_date" required><br><br>
+
+        <label for = "appt_time">Appointment Time (HH:MM:SS 24-hour format):</label><br>
+        <input
+                type="text"
+                id="appt_time"
+                name="appt_time"
+                required
+                pattern="([01]\d|2[0-3]):([0-5]\d):([0-5]\d)"
+                title="Time must be in 24 hours format"
+        ><br><br>
+
+        <h3> Symptom Details </h3>
+        <label for="symptom_type">Symptom Type (e.g., Headache, Fever):</label><br>
+        <input type="text" id="symptom_type" name="symptom_type" required><br><br>
+
+        <label for="num_days">Duration (Number of Days):</label><br>
+        <input type="number" id="num_days" name="num_days" required min="0"><br><br>
+
+        <button type = "submit">Record Symptom</button>
+    </form>
+
+<hr>
+{% if context.message %}
+    <p style="color: green;"{{context.message}}</p>
+{% elif context.error %}
+    <p style="color: red;">{{context.error}}</p>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Patient</title>
+</head>
+<body>
+    <h2> Add New Patient </h2>
+
+    <form method="POST" action="{% url 'add_patient' %}">
+        {% csrf_token %} <label for="ssn">SSN (VARCHAR(40)):</label><br>
+        <input type="text" id="ssn" name="ssn" required><br><br>
+
+        <label for="first_name">First Name:</label><br>
+        <input type="text" id="first_name" name="first_name" required><br><br>
+
+        <label for="last_name">Last Name:</label><br>
+        <input type="text" id="last_name" name="last_name" required><br><br>
+
+        <label for="birthdate">Birthdate (YYYY-MM-DD):</label><br>
+        <input type="date" id="birthdate" name="birthdate" required><br><br>
+
+        <label for="address">Address:</label><br>
+        <input type="text" id="address" name="address" required><br><br>
+
+        <label for="funds">Funds (INTEGER):</label><br>
+        <input type="number" id="funds" name="funds" required min="0"><br><br>
+
+        <label for="contact">Contact (CHAR(10)):</label><br>
+        <input type="text" id="contact" name="contact" pattern=".{10,10}" title= "Must be 10 characters" required><br><br>
+
+        <button type="submit">Submit Patient Data</button>
+
+    </form>
+
+
+    <hr>
+    {% if context.message %}
+        <p style="color: green;">{{context.message }}</p>
+    {% elif context.error %}
+        <p style="color: red;">{{ context.error }}</p>
+    {% endif %}
+
+</body>
+</html>
