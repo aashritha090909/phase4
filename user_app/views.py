@@ -296,6 +296,256 @@ def assign_nurse_to_room_view(request):
     return render(request, 'user_app/assign_nurse_to_room.html', context)
 
 
+def assign_room_to_patient_view(request):
+    context = {}
+
+    if request.method == 'POST':
+        ip_ssn = request.POST.get('ssn')
+        ip_roomType = request.POST.get('room_type')
+
+        try:
+            ip_roomNumber = int(request.POST.get('room_number'))
+        except (ValueError, TypeError):
+            context['error'] = 'Room number must be a whole number'
+            return render(request, 'user_app/assign_room_to_patient.html', context)
+
+        if not ip_ssn or not ip_roomType:
+            context['error'] = 'All fields are required'
+            return render(request, 'user_app/assign_room_to_patient.html', context)
+
+        if len(ip_ssn) != 11:
+            context['error'] = 'SSN must be XXX-XX-XXXX format'
+            return render(request, 'user_app/assign_room_to_patient.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('assign_room_to_patient', [ip_ssn, ip_roomNumber, ip_roomType])
+                context['message'] = f'Patient {ip_ssn} assigned to room {ip_roomNumber}'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error assigning room to patient. Details: {e}"
+
+    return render(request, 'user_app/assign_room_to_patient.html', context)
+
+
+def assign_doctor_to_appointment_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_patientId = request.POST.get('patient_id')
+        ip_apptDate = request.POST.get('appt_date')
+        ip_apptTime = request.POST.get('appt_time')
+        ip_doctorId = request.POST.get('doctor_id')
+
+        if not ip_patientId or not ip_apptDate or not ip_apptTime or not ip_doctorId:
+            context['error'] = 'All fields are required'
+            return render(request, 'user_app/assign_doctor_to_appointment.html', context)
+
+        if len(ip_patientId) != 11 or len(ip_doctorId) != 11:
+            context['error'] = 'SSNs must be XXX-XX-XXXX FORMAT'
+            return render(request, 'user_app/assign_doctor_to_appointment.html', context)
+
+        import re
+        if not re.match(r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$', ip_apptTime):
+            context['error'] = 'Time must be in 24-hour format (HH:MM:SS)'
+            return render(request, 'user_app/assign_doctor_to_appointment.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('assign_doctor_to_appointment', [ip_patientId, ip_apptDate, ip_apptTime, ip_doctorId])
+                context['message'] = f'Doctor {ip_doctorId} assigned to appointment'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            if "maximum" in str(e).lower() or "3" in str(e):
+                context['error'] = f"Error: Maximum 3 doctors per appointment already reached"
+            elif "conflict" in str(e).lower() or "other patient" in str(e).lower():
+                context['error'] = f"Error: Doctor {ip_doctorId} has another appointment at this time"
+            else:
+                context['error'] = f"Error assigning doctor to appointment. Details: {e}"
+
+    return render(request, 'user_app/assign_doctor_to_appointment.html', context)
+
+
+def manage_department_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_ssn = request.POST.get('ssn')
+
+        try:
+            ip_deptId = int(request.POST.get('dept_id'))
+        except (ValueError, TypeError):
+            context['error'] = 'Department ID must be a whole number'
+            return render(request, 'user_app/manage_department.html', context)
+
+        if not ip_ssn:
+            context['error'] = 'All fields are required'
+            return render(request, 'user_app/manage_department.html', context)
+
+        if len(ip_ssn) != 11:
+            context['error'] = 'SSN must be XXX-XX-XXXX format'
+            return render(request, 'user_app/manage_department.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('manage_department', [ip_ssn, ip_deptId])
+                context['message'] = f'Staff {ip_ssn} set as manager of department {ip_deptId}'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error managing department. Details: {e}"
+
+    return render(request, 'user_app/manage_department.html', context)
+
+
+def release_room_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_roomNumber = int(request.POST.get('room_number'))
+
+        if not ip_roomNumber:
+            context['error'] = 'Room is required'
+            return render(request, 'user_app/release_room.html', context)
+
+        try:
+            ip_roomNumber = int(ip_roomNumber)
+        except (ValueError, TypeError):
+            context['error'] = 'Room number must be a whole number'
+            return render(request, 'user_app/release_room.html', context)
+
+        if ip_roomNumber <= 0:
+            context['error'] = 'Room number must be positive'
+            return render(request, 'user_app/release_room.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('release_room', [ip_roomNumber])
+                context['message'] = f'Room {ip_roomNumber} released'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error releasing room. Details: {e}"
+
+    return render(request, 'user_app/release_room.html', context)
+
+
+def remove_patient_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_ssn = request.POST.get('ssn')
+
+        if not ip_ssn:
+            context['error'] = 'SSN is required'
+            return render(request, 'user_app/remove_patient.html', context)
+
+        if len(ip_ssn) != 11:
+            context['error'] = 'SSN must be XXX-XX-XXXX format'
+            return render(request, 'user_app/remove_patient.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('remove_patient', [ip_ssn])
+                context['message'] = f'Patient {ip_ssn} removed'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error removing patient. Details: {e}"
+
+    return render(request, 'user_app/remove_patient.html', context)
+
+
+def remove_staff_from_dept_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_ssn = request.POST.get('ssn')
+
+        try:
+            ip_deptId = int(request.POST.get('dept_id'))
+        except (ValueError, TypeError):
+            context['error'] = 'Department ID must be a whole number'
+            return render(request, 'user_app/remove_staff_from_dept.html', context)
+
+        required_fields = [ip_ssn]
+        if not ip_ssn or not ip_deptId :
+            context['error'] = 'All fields are required'
+            return render(request, 'user_app/remove_staff_from_dept.html', context)
+
+        if len(ip_ssn) != 11:
+            context['error'] = 'SSN must be XXX-XX-XXXX format'
+            return render(request, 'user_app/remove_staff_from_dept.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('remove_staff_from_dept', [ip_ssn, ip_deptId])
+                context['message'] = f'Staff {ip_ssn} removed from department {ip_deptId}'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error removing staff from department. Details: {e}"
+
+    return render(request, 'user_app/remove_staff_from_dept.html', context)
+
+
+def complete_appointment_view(request):
+    context = {}
+    if request.method == 'POST':
+        ip_patientId = request.POST.get('patient_id')
+        ip_apptDate = request.POST.get('appt_date')
+        ip_apptTime = request.POST.get('appt_time')
+
+        required_fields = [ip_patientId, ip_apptDate, ip_apptTime]
+        if not ip_patientId or not ip_apptDate or not ip_apptTime:
+            context['error'] = 'All fields are required'
+            return render(request, 'user_app/complete_appointment.html', context)
+
+        if len(ip_patientId) != 11:
+            context['error'] = 'PatientID must be XXX-XX-XXXX format'
+            return render(request, 'user_app/complete_appointment.html', context)
+
+        import re
+        if not re.match(r'^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$', ip_apptTime):
+            context['error'] = 'Time must be in 24-hour format (HH:MM:SS)'
+            return render(request, 'user_app/complete_appointment.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('complete_appointment', [ip_patientId, ip_apptDate, ip_apptTime])
+                context['message'] = f'Appointment completed for patient {ip_patientId}'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error completing appointment. Details: {e}"
+
+    return render(request, 'user_app/complete_appointment.html', context)
+
+
+def complete_orders_view(request):
+    context = {}
+    if request.method == 'POST':
+        try:
+            ip_num_orders = int(request.POST.get('num_orders'))
+        except (ValueError, TypeError):
+            context['error'] = 'Number of orders must be a whole number'
+            return render(request, 'user_app/complete_orders.html', context)
+
+        if not ip_num_orders:
+            context['error'] = 'Number of orders is required'
+            return render(request, 'user_app/complete_orders.html', context)
+
+        if ip_num_orders < 1:
+            context['error'] = 'Number of orders must be at least 1'
+            return render(request, 'user_app/complete_orders.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('complete_orders', [ip_num_orders])
+                context['message'] = f'Completed {ip_num_orders} order(s)'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Error completing orders. Details: {e}"
+
+    return render(request, 'user_app/complete_orders.html', context)
 
 
 

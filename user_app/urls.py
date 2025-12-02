@@ -15,4 +15,12 @@ urlpatterns = [
     path("charges/", views.outstanding_charges, name="outstanding_charges"),
     path('add-funds/', views.add_funds_view, name='add_funds'),
     path('assign-nurse-to-room/', views.assign_nurse_to_room_view, name='assign_nurse_to_room'),
+    path('assign-room-to-patient/', views.assign_room_to_patient_view, name='assign_room_to_patient'),
+    path('assign-doctor-to-appointment/', views.assign_doctor_to_appointment_view, name='assign_doctor_to_appointment'),
+    path('manage-department/', views.manage_department_view, name='manage_department'),
+    path('release-room/', views.release_room_view, name='release_room'),
+    path('remove-patient/', views.remove_patient_view, name='remove_patient'),
+    path('remove-staff-from-dept/', views.remove_staff_from_dept_view, name='remove_staff_from_dept'),
+    path('complete-appointment/', views.complete_appointment_view, name='complete_appointment'),
+    path('complete-orders/', views.complete_orders_view, name='complete_orders'),
 ]
