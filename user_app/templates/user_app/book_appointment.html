@@ -13,7 +13,7 @@
         <label for="patient_id">Patient SSN (ID):</label><br>
         <input type="text" id="patient_id" name="patient_id" required><br><br>
 
-        <label for ="appt_date">Appointment Date (YYYY-MM-DD):</label><br>
+        <label for ="appt_date">Appointment Date:</label><br>
         <input type="date" id="appt_date" name="appt_date" required><br><br>
 
         <label for = "appt_time">Appointment Time (HH:MM:SS 24-hour format):</label><br>
@@ -34,7 +34,7 @@
 
 <hr>
 {% if context.message %}
-    <p style="color: green;"{{context.message}}</p>
+    <p style="color: green;">{{context.message}}</p>
 {% elif context.error %}
     <p style="color: red;">{{context.error}}</p>
 {% endif %}
