@@ -465,7 +465,6 @@ def remove_staff_from_dept_view(request):
             context['error'] = 'Department ID must be a whole number'
             return render(request, 'user_app/remove_staff_from_dept.html', context)
 
-        required_fields = [ip_ssn]
         if not ip_ssn or not ip_deptId :
             context['error'] = 'All fields are required'
             return render(request, 'user_app/remove_staff_from_dept.html', context)
@@ -493,7 +492,6 @@ def complete_appointment_view(request):
         ip_apptDate = request.POST.get('appt_date')
         ip_apptTime = request.POST.get('appt_time')
 
-        required_fields = [ip_patientId, ip_apptDate, ip_apptTime]
         if not ip_patientId or not ip_apptDate or not ip_apptTime:
             context['error'] = 'All fields are required'
             return render(request, 'user_app/complete_appointment.html', context)
