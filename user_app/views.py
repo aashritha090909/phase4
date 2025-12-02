@@ -272,7 +272,7 @@ def assign_nurse_to_room_view(request):
     context = {}
 
     if request.method == 'POST':
-        nurse_id = request.POST.get('nurse_id')   # SSN (string)
+        nurse_id = request.POST.get('nurse_id')
         room_number_raw = request.POST.get('room_number')
 
         if not nurse_id or not room_number_raw:
