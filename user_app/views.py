@@ -5,6 +5,8 @@ from django.db import connection
 from django.http import HttpResponse
 
 # Create your views here.
+def home(request):
+    return render(request, "user_app/home.html")
 
 def add_patient_view(request):
     context = {}
@@ -209,3 +211,34 @@ def add_staff_to_dept_view(request):
             context['error'] = f"Error adding staff. Details: {e}"
 
     return render(request, 'user_app/add_staff_to_dept.html', context)
+
+
+def query_view(sql):
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
+
+def room_wise(request):
+    data = query_view("SELECT * FROM room_wise_view;")
+    return render(request, "user_app/room_wise.html", {"data": data})
+
+def symptoms_overview(request):
+    data = query_view("SELECT * FROM symptoms_overview_view;")
+    return render(request, "user_app/symptoms_overview.html", {"data": data})
+
+def medical_staff(request):
+    staff = query_view("SELECT * FROM medical_staff_view;")
+    return render(request, "user_app/medical_staff.html", {"staff": staff})
+
+def department_view(request):
+    data = query_view("SELECT * FROM department_view;")
+    return render(request, "user_app/department_view.html", {"data": data})
+
+def outstanding_charges(request):
+    data = query_view("SELECT * FROM outstanding_charges_view;")
+    return render(request, "user_app/outstanding_charges.html", {"data": data})
+
+
+

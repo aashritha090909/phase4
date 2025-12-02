@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>Symptoms Overview</title></head>
+<body>
+<h1>Symptoms Overview</h1>
+
+<table border="1">
+    <tr>
+        <th>SSN</th>
+        <th>Full Name</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Symptoms</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <td>{{ row.ssn }}</td>
+        <td>{{ row.full_name }}</td>
+        <td>{{ row.apptDate }}</td>
+        <td>{{ row.apptTime }}</td>
+        <td>{{ row.symptoms }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

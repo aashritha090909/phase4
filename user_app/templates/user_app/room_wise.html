@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head><title>Room Wise View</title></head>
+<body>
+<h1>Room-wise View</h1>
+
+<table border="1">
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Room Number</th>
+        <th>Department</th>
+        <th>Doctor First</th>
+        <th>Doctor Last</th>
+        <th>Nurse First</th>
+        <th>Nurse Last</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <td>{{ row.firstName }}</td>
+        <td>{{ row.lastName }}</td>
+        <td>{{ row.roomNumber }}</td>
+        <td>{{ row.department_name }}</td>
+        <td>{{ row.doc_first_name }}</td>
+        <td>{{ row.doc_last_name }}</td>
+        <td>{{ row.nurse_first_name }}</td>
+        <td>{{ row.nurse_last_name }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<h1>Medical Staff</h1>
+
+<table border="1">
+    <tr>
+        <th>SSN</th>
+        <th>Type</th>
+        <th>License Info</th>
+        <th>Job Info</th>
+        <th>Departments</th>
+        <th># Assignments</th>
+    </tr>
+
+    {% for s in staff %}
+    <tr>
+        <td>{{ s.ssn }}</td>
+        <td>{{ s.staffType }}</td>
+        <td>{{ s.licenseInfo }}</td>
+        <td>{{ s.jobInfo }}</td>
+        <td>{{ s.departments }}</td>
+        <td>{{ s.numAssignments }}</td>
+    </tr>
+    {% endfor %}
+</table>

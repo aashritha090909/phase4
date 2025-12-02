@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>Departments</title></head>
+<body>
+<h1>Department View</h1>
+
+<table border="1">
+    <tr>
+        <th>Department</th>
+        <th># Staff</th>
+        <th># Doctors</th>
+        <th># Nurses</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <td>{{ row.longName }}</td>
+        <td>{{ row.numStaff }}</td>
+        <td>{{ row.numDocs }}</td>
+        <td>{{ row.numNurses }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

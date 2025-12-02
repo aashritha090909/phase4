@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital System Home</title>
+</head>
+<body>
+    <h1>Hospital Management System</h1>
+    <p>Select a module:</p>
+
+    <ul>
+        <li><a href="{% url 'room_wise' %}">Room-wise View</a></li>
+        <li><a href="{% url 'symptoms' %}">Symptoms Dashboard</a></li>
+        <li><a href="{% url 'medical_staff' %}">Staff Overview</a></li>
+        <li><a href="{% url 'department_view' %}">Departments</a></li>
+        <li><a href="{% url 'outstanding_charges' %}">Outstanding Charges</a></li>
+
+        <li><a href="{% url 'add_patient' %}">Add Patient</a></li>
+        <li><a href="{% url 'record_symptom' %}">Record Symptom</a></li>
+        <li><a href="{% url 'book_appointment' %}">Book Appointment</a></li>
+        <li><a href="{% url 'place_order' %}">Place Order</a></li>
+        <li><a href="{% url 'add_staff_to_dept' %}">Add Staff to a Department</a></li>
+        
+    </ul>
+</body>
+</html>
