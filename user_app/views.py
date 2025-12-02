@@ -240,5 +240,65 @@ def outstanding_charges(request):
     data = query_view("SELECT * FROM outstanding_charges_view;")
     return render(request, "user_app/outstanding_charges.html", {"data": data})
 
+def add_funds_view(request):
+    context = {}
+
+    if request.method == 'POST':
+        ip_ssn = request.POST.get('ssn')
+        amount_raw = request.POST.get('amount')
+
+        try:
+            ip_amount = int(amount_raw)
+        except (ValueError, TypeError):
+            context['error'] = 'Amount must be a valid whole number'
+            return render(request, 'user_app/add_funds.html', context)
+
+        if not ip_ssn or ip_amount is None or ip_amount < 0:
+            context['error'] = 'SSN is required and amount must be non-negative'
+            return render(request, 'user_app/add_funds.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('add_funds', [ip_ssn, ip_amount])
+                context['message'] = f'${ip_amount} successfully added to patient {ip_ssn}.'
+
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Database error occurred: {e}"
+
+    return render(request, 'user_app/add_funds.html', context)
+
+def assign_nurse_to_room_view(request):
+    context = {}
+
+    if request.method == 'POST':
+        nurse_id = request.POST.get('nurse_id')   # SSN (string)
+        room_number_raw = request.POST.get('room_number')
+
+        if not nurse_id or not room_number_raw:
+            context['error'] = 'All fields are required.'
+            return render(request, 'user_app/assign_nurse_to_room.html', context)
+
+        try:
+            room_number = int(room_number_raw)
+        except ValueError:
+            context['error'] = 'Room number must be a valid number.'
+            return render(request, 'user_app/assign_nurse_to_room.html', context)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.callproc('assign_nurse_to_room', [nurse_id, room_number])
+                context['message'] = f'Nurse {nurse_id} assigned to room {room_number} successfully.'
+        except Exception as e:
+            print(f"Database Error: {e}")
+            context['error'] = f"Database error occurred: {e}"
+
+    return render(request, 'user_app/assign_nurse_to_room.html', context)
+
+
+
+
+
+
 
 

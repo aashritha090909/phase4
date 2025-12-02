@@ -13,4 +13,6 @@ urlpatterns = [
     path("staff/", views.medical_staff, name="medical_staff"),
     path("departments/", views.department_view, name="department_view"),
     path("charges/", views.outstanding_charges, name="outstanding_charges"),
+    path('add-funds/', views.add_funds_view, name='add_funds'),
+    path('assign-nurse-to-room/', views.assign_nurse_to_room_view, name='assign_nurse_to_room'),
 ]

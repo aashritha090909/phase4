@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Funds to Patient</title>
+</head>
+<body>
+    <h2>Add Funds to Patient</h2>
+<form method="POST" action="{% url 'add_funds' %}">
+    {% csrf_token %}
+
+    <label for="ssn">Patient SSN:</label><br>
+    <input type="text" id="ssn" name="ssn" required><br><br>
+
+    <label for="amount">Amount to Add:</label><br>
+    <input type="number" id="amount" name="amount" min="0" required><br><br>
+
+    <button type="submit">Add Funds</button>
+</form>
+
+<hr>
+
+{% if message %}
+    <p style="color: green;">{{ message }}</p>
+{% elif error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
