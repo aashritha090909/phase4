@@ -19,6 +19,11 @@
 </form>
 
 <hr>
+<p>
+    <a href="{% url 'home' %}">
+        <button type="button">Home</button>
+    </a>
+</p>
 
 {% if message %}
     <p style="color: green;">{{ message }}</p>
